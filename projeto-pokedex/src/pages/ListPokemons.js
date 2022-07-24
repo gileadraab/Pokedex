@@ -17,8 +17,8 @@ import { GlobalContext } from "../global/GlobalContext";
 function ListPokemons() {
   const navigate = useNavigate();
   const [listPokemons, setListPokemons] = useState([]);
-  const [capturedPokemons, setCapturedPokemons] = useState({})
 
+  const {capturedPokemons, setCapturedPokemons} = useContext(GlobalContext)
   const { detailedListPokemon, setDetailedListPokemon } = useContext(GlobalContext);
   const { pokedex, setPokedex } = useContext(GlobalContext);
 
@@ -68,20 +68,22 @@ function ListPokemons() {
     // Without this, react doesn't realize there's a change to the state
     // And doesn't trigger a rerender  
     let newCapturedPokemons = JSON.parse(JSON.stringify(capturedPokemons))
-
+    let pokedexCopy = pokedex
     console.log(newCapturedPokemons)
+
     if (pokemonId in newCapturedPokemons) {
-      console.log("Deleting")
       delete newCapturedPokemons[pokemonId]
+      delete pokedexCopy[pokemonId]
     } else {
-      console.log("Capturing")
       newCapturedPokemons[pokemonId] = true;
+      pokedexCopy[pokemonId] = detailedListPokemon[pokemonId]
     }
     setCapturedPokemons(newCapturedPokemons)
 
 
     // ALERT! NOT TESTED
     localStorage.setItem("capturedPokemons", JSON.stringify(newCapturedPokemons))
+    localStorage.setItem("pokedex", JSON.stringify(pokedex))
 
   };
 
