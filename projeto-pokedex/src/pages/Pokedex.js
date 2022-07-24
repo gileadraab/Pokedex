@@ -2,27 +2,28 @@ import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { GlobalContext } from "../global/GlobalContext";
 import {goToDetailPokemon, goToBack} from "../routes/coordinator"
-import { CardPokemon, ContainerPokemon, CardButton, CardIdName, Type } from "../components/StyledListPokemons";
+import { CardPokemon, ContainerPokemon, CardButton, CardIdName, Type, ButtonCapturar } from "../components/StyledListPokemons";
 
 function Poquedex() {
 
-  // const {pokedex, setPokedex } = useContext(GlobalContext)
-  // console.log(pokedex)
+  const {pokedex, setPokedex } = useContext(GlobalContext)
+  const {capturedPokemons, setCapturedPokemons} = useContext(GlobalContext)
+  console.log(pokedex)
 
-  const navigate = useNavigate()
-
-
-  const {detailedListPokemon, setDetailedListPokemon} = useContext(GlobalContext);
-  let capturedPokemonsLocalStorage = localStorage.getItem("capturedPokemons") ? JSON.parse(localStorage.getItem("capturedPokemons")) : {}
-
-
-  const [capturedPokemons, setCapturedPokemons] = useState(capturedPokemonsLocalStorage)
-
-  console.log(capturedPokemons)
-  console.log(Object.keys(capturedPokemons))
-  const myPokemons = Object.keys(capturedPokemons).map((pokemonId) => {
   
-    let detailedPokemonInfo = detailedListPokemon[Number(pokemonId)]
+
+  const removeFromPokedex = (pokemonId) => {
+    let newCapturedPokemons = JSON.parse(JSON.stringify(capturedPokemons))
+    let pokedexCopy = pokedex
+ 
+    delete pokedexCopy[pokemonId]    
+    setCapturedPokemons(newCapturedPokemons)
+    
+    localStorage.setItem("pokedex", JSON.stringify(pokedex))
+  }
+
+  const myPokemons = Object.keys(pokedex).map((pokemonId) => {
+    let detailedPokemonInfo = pokedex[pokemonId]
 
     return (
       <CardPokemon key={detailedPokemonInfo.id} typePokemon={detailedPokemonInfo.types[0].type.name}>
@@ -40,17 +41,13 @@ function Poquedex() {
           })}
         </Type>
         <CardButton>
-{/*          <button onClick={() => goToDetailPokemon(navigate)}>
-            Detalhes
-          </button>
-          <button>
+          <ButtonCapturar onClick={() => removeFromPokedex(pokemonId)}>
             Remover
-          </button>
-*/}        </CardButton>
+          </ButtonCapturar>
+        </CardButton>
       </CardPokemon>
     );
   });
-
 
 
   return (
